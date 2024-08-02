@@ -1,0 +1,1 @@
+Scaffold-DbContext "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=QuizPlatform;Integrated Security=True;Connect Timeout=300;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
