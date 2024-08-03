@@ -14,7 +14,10 @@ namespace QuizPlatform.Repository
             private set;
         }
         public DbSet<T> DbSet { get; set; }
-
+        public virtual void Delete(T entity)
+        {
+            DbSet.Remove(entity);
+        }
         public BaseRepository(IDbFactory dbFactory)
         {
             DbFactory = dbFactory;
@@ -49,6 +52,12 @@ namespace QuizPlatform.Repository
         {
             return await DbSet.FirstOrDefaultAsync<T>(where);
         }
+
+        public virtual IQueryable<T> Where(Expression<Func<T, bool>> where)
+        {
+            return DbSet.Where(where);
+        }
+
         public virtual async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
         {
             return await DbSet.AnyAsync(predicate);

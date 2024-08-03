@@ -7,6 +7,7 @@ namespace QuizPlatform.BLL.Quiz
     public interface IQuizBLL
     {
         Task<IResponse<QuizDto>> CreateQuiz(QuizDto QuizDto);
+        Task<IResponse<bool>> DeleteQuizAsync(int QuizId);
 
     }
 }

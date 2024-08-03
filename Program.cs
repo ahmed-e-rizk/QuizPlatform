@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<AuthSetting>(builder.Configuration.GetSection(AppsettingsEnum.AuthSetting.ToString()));
 // Add services to the container.
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
 builder.Services.AddScoped<IDbFactory, DbFactory>(s => new DbFactory(new SqlConnection(builder.Configuration.GetConnectionString(AppsettingsEnum.QuizPlatformContext.ToString()))));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

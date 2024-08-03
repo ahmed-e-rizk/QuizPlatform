@@ -14,6 +14,9 @@ namespace QuizPlatform.Infrastructure
         private bool seeddata;
         public DbFactory(DbConnection connection)
         {
+           var optionsBuilder = new DbContextOptionsBuilder<QuizPlatformContext>()
+            .UseLazyLoadingProxies()  // Enable lazy loading
+            .UseSqlServer(connection);
             _connection = connection;
             seeddata = true;
         }

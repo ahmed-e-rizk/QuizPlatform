@@ -28,5 +28,12 @@ namespace QuizPlatform.Controllers
 
             return Ok(response);
         }
+        [HttpPost("DeleteQuiz")]
+        public async Task<IActionResult> DeleteQuizAsync(int QuizId)
+        {
+            var response = await _quizBLL.DeleteQuizAsync(QuizId);
+
+            return Ok(response);
+        }
     }
 }

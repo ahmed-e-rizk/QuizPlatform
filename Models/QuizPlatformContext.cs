@@ -30,7 +30,7 @@ public partial class QuizPlatformContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=QuizPlatform;Integrated Security=True;Connect Timeout=300;");
+        => optionsBuilder.UseLazyLoadingProxies().UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=QuizPlatform;Integrated Security=True;Connect Timeout=300;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,7 +74,13 @@ public partial class QuizPlatformContext : DbContext
 
             entity.HasOne(d => d.Question).WithMany(p => p.Options)
                 .HasForeignKey(d => d.QuestionId)
-                .HasConstraintName("FK__Option__Question__29572725");
+                .HasConstraintName("FK__Option__Question__29572725")
+                ;
+            entity.HasOne(q => q.Answers)
+         .WithOne(a => a.Option)
+         .HasForeignKey<Answer>(a => a.OptionId)
+         .OnDelete(DeleteBehavior.Cascade);
+            ;
         });
 
         modelBuilder.Entity<Question>(entity =>
@@ -86,6 +92,17 @@ public partial class QuizPlatformContext : DbContext
             entity.HasOne(d => d.Quiz).WithMany(p => p.Questions)
                 .HasForeignKey(d => d.QuizId)
                 .HasConstraintName("FK__Question__QuizId__267ABA7A");
+
+            entity.HasOne(q => q.Answers)
+        .WithOne(a => a.Question)
+        .HasForeignKey<Answer>(a => a.QuestionId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(q => q.Options)
+        .WithOne(a => a.Question)
+        .HasForeignKey(a => a.QuestionId)
+        .OnDelete(DeleteBehavior.Cascade);
+
         });
 
         modelBuilder.Entity<Quiz>(entity =>
@@ -96,6 +113,10 @@ public partial class QuizPlatformContext : DbContext
 
             entity.Property(e => e.Date).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(150);
+            entity.HasMany(q => q.Questions)
+        .WithOne(q => q.Quiz)
+        .HasForeignKey(q => q.QuizId)
+        .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>
