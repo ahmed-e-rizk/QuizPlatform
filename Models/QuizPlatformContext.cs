@@ -30,7 +30,6 @@ public partial class QuizPlatformContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=QuizPlatform;Integrated Security=True;Connect Timeout=300;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,12 +42,12 @@ public partial class QuizPlatformContext : DbContext
 
             entity.Property(e => e.AnswerText).HasMaxLength(500);
 
-            entity.HasOne(d => d.Option).WithMany(p => p.Answers)
-                .HasForeignKey(d => d.OptionId)
+            entity.HasOne(d => d.Option).WithOne(p => p.Answers)
+                .HasForeignKey<Answer>(d => d.OptionId)
                 .HasConstraintName("FK__Answer__OptionId__2D27B809");
 
-            entity.HasOne(d => d.Question).WithMany(p => p.Answers)
-                .HasForeignKey(d => d.QuestionId)
+            entity.HasOne(d => d.Question).WithOne(p => p.Answers)
+                .HasForeignKey<Answer>(d => d.QuestionId)
                 .HasConstraintName("FK__Answer__Question__2C3393D0");
         });
 
@@ -58,12 +57,12 @@ public partial class QuizPlatformContext : DbContext
 
             entity.ToTable("ImageStorage");
 
-            entity.Property(e => e.FileSize).HasColumnType("numeric(10, 5)");
+            entity.Property(e => e.FileSize).HasColumnType("numeric(20, 5)");
             entity.Property(e => e.FuLlPath).HasMaxLength(200);
             entity.Property(e => e.Name).HasMaxLength(200);
 
-            entity.HasOne(d => d.Quiz).WithMany(p => p.ImageStorages)
-                .HasForeignKey(d => d.QuizId)
+            entity.HasOne(d => d.Quiz).WithOne(p => p.ImageStorages)
+                .HasForeignKey<ImageStorage>(d => d.QuizId)
                 .HasConstraintName("FK__ImageStor__QuizI__300424B4");
         });
 
@@ -126,7 +125,7 @@ public partial class QuizPlatformContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(200);
-            entity.Property(e => e.Password).HasMaxLength(10);
+            entity.Property(e => e.Password).HasMaxLength(100);
         });
 
         OnModelCreatingPartial(modelBuilder);

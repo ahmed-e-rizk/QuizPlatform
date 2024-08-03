@@ -49,7 +49,7 @@ namespace QuizPlatform.BLL
 
                 if (await _userRepository.AnyAsync(e => e.Email.ToLower().Equals(registerDto.Email.ToLower()) ))
                     return response.CreateResponse(MessageCodes.AlreadyExists);
-
+                registerDto.Password= _passwordHasher.HashPassword(registerDto.Password);
                 await _userRepository.AddAsync(_mapper.Map<User>(registerDto));
 
              await   _unitOfWork.CommitAsync();
@@ -106,14 +106,13 @@ namespace QuizPlatform.BLL
                     RefreshToken = generatedRefreshToken
                 };
 
-                response.CreateResponse(tokenResultDto);
+                return response.CreateResponse(tokenResultDto);
             }
             catch (Exception ex)
             {
-                response.CreateResponse(ex);
+                return response.CreateResponse(ex);
             }
 
-            return response;
         }
 
 
@@ -127,18 +126,17 @@ namespace QuizPlatform.BLL
 
                 if (!validation.IsValid)
                 {
-                    response.CreateResponse(validation.Errors);
-                    return response;
+                    
+                    return response.CreateResponse(validation.Errors); ;
                 }
 
                 var verifyTokenResult = await VerifyTokenAsync(refreshTokenDto, tokenValidationParameters);
 
                 if (!verifyTokenResult.IsSuccess)
                 {
-                    response.AppendErrors(verifyTokenResult.Errors)
-                            .CreateResponse();
+                    response.AppendErrors(verifyTokenResult.Errors);
+                 return   response.CreateResponse();
 
-                    return response;
                 }
 
                 var storedToken = verifyTokenResult.Data;
@@ -148,8 +146,8 @@ namespace QuizPlatform.BLL
 
                 if (user is null)
                 {
-                    response.CreateResponse(MessageCodes.NotFound);
-                    return response;
+                    
+                    return response.CreateResponse(MessageCodes.NotFound);
                 }
 
                 var newJwtToken = await GenerateJwtTokenAsync(user);
@@ -161,15 +159,14 @@ namespace QuizPlatform.BLL
                     Token = newJwtToken.Token,
                     RefreshToken = newRefreshToken
                 };
-
-                response.CreateResponse(tokenResultDto);
+               
+                              return response.CreateResponse(tokenResultDto);
             }
             catch (Exception ex)
             {
-                response.CreateResponse(ex);
+                return response.CreateResponse(ex);
             }
 
-            return response;
         }
 
         public async Task<IResponse<bool>> LogoutAsync(LogoutDto logoutDto)
@@ -291,10 +288,10 @@ namespace QuizPlatform.BLL
 
                     if (!isSameEncryption)
                     {
-                        response.CreateResponse(MessageCodes.InvalidToken);
-
                         tokenValidationParameters.ValidateLifetime = true;
-                        return response;
+
+                        return response.CreateResponse(MessageCodes.InvalidToken);
+
                     }
                 }
 
@@ -308,11 +305,11 @@ namespace QuizPlatform.BLL
 
                 if (storedToken is null)
                 {
-                    response.CreateResponse(MessageCodes.NotFound);
-
-                    // reset lifetime to valdiate it.
                     tokenValidationParameters.ValidateLifetime = true;
-                    return response;
+
+                    
+
+                    return response.CreateResponse(MessageCodes.NotFound);
                 }
 
                 // 07- Validate jwt token Jti matches refresh token jti in database.
@@ -320,23 +317,23 @@ namespace QuizPlatform.BLL
 
                 if (!storedToken.Jti.Equals(jti))
                 {
-                    response.CreateResponse(MessageCodes.TokensDoNotMatch);
+                    tokenValidationParameters.ValidateLifetime = true;
+
+
 
                     // reset lifetime to valdiate it.
-                    tokenValidationParameters.ValidateLifetime = true;
-                    return response;
+                    return response.CreateResponse(MessageCodes.TokensDoNotMatch);
                 }
-
-                response.CreateResponse(storedToken);
+                tokenValidationParameters.ValidateLifetime = true;
+                return response.CreateResponse(storedToken);
             }
             catch (Exception ex)
             {
-                response.CreateResponse(MessageCodes.InvalidToken);
+                return response.CreateResponse(ex);
             }
 
             // reset lifetime to valdiate it.
-            tokenValidationParameters.ValidateLifetime = true;
-            return response;
+      
         }
         private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {

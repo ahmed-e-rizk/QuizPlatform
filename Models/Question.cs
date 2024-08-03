@@ -13,7 +13,7 @@ public partial class Question
 
     public int AnswerType { get; set; }
 
-    public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
+    public virtual Answer Answers { get; set; } = new Answer();
 
     public virtual ICollection<Option> Options { get; set; } = new List<Option>();
 

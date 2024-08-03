@@ -13,7 +13,7 @@ public partial class Option
 
     public bool IsChecked { get; set; }
 
-    public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
+    public virtual Answer Answers { get; set; } = new Answer();
 
     public virtual Question? Question { get; set; }
 }

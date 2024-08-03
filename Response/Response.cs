@@ -27,8 +27,15 @@ namespace QuizPlatform.Response
             }
             return this;
         }
-        public IResponse<T> CreateResponse(T data)
+
+        public IResponse<T> CreateResponse()
         {
+
+            return this;
+        }
+
+        public IResponse<T> CreateResponse(T data)
+          {
 
             var result = new Response<T>
             {

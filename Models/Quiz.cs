@@ -15,7 +15,7 @@ public partial class Quiz
 
     public DateTime? Date { get; set; }
 
-    public virtual ICollection<ImageStorage> ImageStorages { get; set; } = new List<ImageStorage>();
+    public virtual ImageStorage ImageStorages { get; set; } = new ImageStorage();
 
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
 }

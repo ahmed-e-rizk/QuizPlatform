@@ -13,8 +13,7 @@ namespace QuizPlatform.Validtion.Auth
             RuleFor(e => e.Name).NotEmpty().WithQuizErrorCode(MessageCodes.NameNotEmpty);
             RuleFor(x => x.Email)
                .NotNull().NotEmpty().EmailAddress().WithQuizErrorCode(MessageCodes.InvalidEmail);
-            RuleFor(x => x.Password).NotEmpty().NotNull().MinimumLength(5).MaximumLength(20).Matches(
-                @"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[\/\+\*\!\@\#\$\%\^\&\(\)\_])[A-Za-z0-9\/\+\*\!\@\#\$\%\^\&\(\)\_]").WithQuizErrorCode(MessageCodes.NotMatchPass);
+            RuleFor(x => x.Password).NotEmpty().NotNull().MinimumLength(5).MaximumLength(20).WithQuizErrorCode(MessageCodes.NotMatchPass);
         }
     }
 }
