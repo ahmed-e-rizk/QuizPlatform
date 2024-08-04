@@ -48,7 +48,7 @@ public partial class QuizPlatformContext : DbContext
 
             entity.HasOne(d => d.Question).WithOne(p => p.Answers)
                 .HasForeignKey<Answer>(d => d.QuestionId)
-                .HasConstraintName("FK__Answer__Question__2C3393D0");
+                .HasConstraintName("FK__Answer__Question__2C3393D0").OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<ImageStorage>(entity =>
@@ -63,7 +63,7 @@ public partial class QuizPlatformContext : DbContext
 
             entity.HasOne(d => d.Quiz).WithOne(p => p.ImageStorages)
                 .HasForeignKey<ImageStorage>(d => d.QuizId)
-                .HasConstraintName("FK__ImageStor__QuizI__300424B4");
+                .HasConstraintName("FK__ImageStor__QuizI__300424B4").OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Option>(entity =>

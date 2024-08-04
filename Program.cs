@@ -7,12 +7,14 @@ using QuizPlatform.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using QuizPlatform.Repository;
 using QuizPlatform.BLL;
-using QuizPlatform.BLL.Quiz;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using QuizPlatform.BLL.Options;
+using QuizPlatform.BLL.Questions;
+using QuizPlatform.BLL.Quizs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<AuthSetting>(builder.Configuration.GetSection(AppsettingsEnum.AuthSetting.ToString()));
@@ -27,6 +29,8 @@ builder.Services.AddAutoMapper(ctf => { ctf.AddProfile<DtoToEntityMappingProfile
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IAuthBLL, AuthBLL>();
 builder.Services.AddScoped<IQuizBLL, QuizBLL>();
+builder.Services.AddScoped<IQuestionBLL, QuestionBLL>();
+builder.Services.AddScoped<IOptionBLL, OptionBLL>();
 
 builder.Services.AddHttpContextAccessor();
 

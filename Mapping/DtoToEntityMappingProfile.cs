@@ -26,8 +26,13 @@ namespace QuizPlatform.Mapping
             CreateMap<OptionsDto, Option>()
                                       .ForMember(dest => dest.OptionText, opt => opt.MapFrom(e => e.OptionText));
 
-            
-
+            CreateMap<CreateQuestionDto, Question>()
+                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(e => e.QuestionText))
+                .ForMember(dest => dest.Answers, opt => opt.MapFrom(e => e.AnswerType == 0 ? e.Answer : new()))
+                .ForMember(dest => dest.Options, opt => opt.MapFrom(e => e.AnswerType == 1 ? e.Options : new()))
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(e => e.QuizId));
+;
+            CreateMap<CreateOptionDto, Option>();
         }
     }
 }

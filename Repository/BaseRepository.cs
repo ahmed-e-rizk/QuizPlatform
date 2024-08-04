@@ -31,7 +31,12 @@ namespace QuizPlatform.Repository
             get { return _dbContext ?? (_dbContext = DbFactory.Initialize()); }
         }
 
-
+        public virtual List<T> Add(List<T> entities)
+        {
+            if (entities != null && entities.Count() > 0)
+                DbSet.AddRange(entities);
+            return entities;
+        }
 
         public T Add<T>(T entity)
         {

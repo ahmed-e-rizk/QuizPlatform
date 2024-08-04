@@ -9,9 +9,6 @@ namespace QuizPlatform.Validtion.Auth
     {
         public RefreshTokenDtoValidator()
         {
-            RuleFor(x => x.Token)
-                .NotNull().WithQuizErrorCode(MessageCodes.Required)
-                .NotEmpty().WithQuizErrorCode(MessageCodes.Required);
 
             RuleFor(x => x.RefreshToken)
                 .NotNull().WithQuizErrorCode(MessageCodes.Required)

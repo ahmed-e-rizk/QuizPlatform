@@ -28,5 +28,24 @@ namespace QuizPlatform.Helder
                FuLlPath = filePath
             };
         }
+
+        public static bool DeleteImage(string fullPath)
+        {
+
+            try
+            {
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

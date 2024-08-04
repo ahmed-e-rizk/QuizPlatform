@@ -127,22 +127,17 @@ namespace QuizPlatform.BLL
                 if (!validation.IsValid)
                 {
                     
-                    return response.CreateResponse(validation.Errors); ;
+                    return response.CreateResponse(validation.Errors); 
                 }
 
-                var verifyTokenResult = await VerifyTokenAsync(refreshTokenDto, tokenValidationParameters);
+                var TokenResult = await _refreshTokenRepository.GetAsync(rt => rt.Token == refreshTokenDto.RefreshToken);
 
-                if (!verifyTokenResult.IsSuccess)
-                {
-                    response.AppendErrors(verifyTokenResult.Errors);
-                 return   response.CreateResponse();
+                
 
-                }
-
-                var storedToken = verifyTokenResult.Data;
+               
 
                 // generate new tokens.
-                var user = await _userRepository.GetAsync(e => e.Id == storedToken.UserId );
+                var user = await _userRepository.GetAsync(e => e.Id == TokenResult.UserId );
 
                 if (user is null)
                 {
@@ -152,7 +147,7 @@ namespace QuizPlatform.BLL
 
                 var newJwtToken = await GenerateJwtTokenAsync(user);
 
-                var newRefreshToken = await UpdateRefreshTokenAsync(storedToken, newJwtToken.Jti);
+                var newRefreshToken = await UpdateRefreshTokenAsync(TokenResult, newJwtToken.Jti);
 
                 var tokenResultDto = new TokenResultDto
                 {
@@ -264,83 +259,86 @@ namespace QuizPlatform.BLL
                                         .Select(s => s[random.Next(s.Length)])
                                         .ToArray());
         }
-        private async Task<IResponse<RefreshToken>> VerifyTokenAsync(RefreshTokenDto refreshTokenDto, TokenValidationParameters tokenValidationParameters)
-        {
-            var response = new Response<RefreshToken>();
+        //private async Task<IResponse<RefreshToken>> VerifyTokenAsync(RefreshTokenDto refreshTokenDto, TokenValidationParameters tokenValidationParameters)
+        //{
+        //    var response = new Response<RefreshToken>();
 
-            try
-            {
-                var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-                // prevent validate token lifetime.
-                tokenValidationParameters.ValidateLifetime = false;
-
-                // 01- Validate token is a propper jwt token formatting.
-                var claimsPrincipal = jwtTokenHandler.ValidateToken(refreshTokenDto.Token, tokenValidationParameters, out var validatedToken);
-
-                // 02- Validate token has been encrypted using the encryption that we've specified. 
-                if (validatedToken is JwtSecurityToken jwtSecurityToken)
-                {
-                    var isSameEncryption = jwtSecurityToken.Header
-                                                           .Alg
-                                                           .Equals(SecurityAlgorithms.HmacSha256,
-                                                                   StringComparison.InvariantCultureIgnoreCase);
-
-                    if (!isSameEncryption)
-                    {
-                        tokenValidationParameters.ValidateLifetime = true;
-
-                        return response.CreateResponse(MessageCodes.InvalidToken);
-
-                    }
-                }
+        //    try
+        //    {
+        //        var storedToken = await _refreshTokenRepository.GetAsync(rt => rt.Token == refreshTokenDto.RefreshToken);
 
 
-                var utcLongExpiryDate = long.Parse(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Exp).Value);
+        //        //var jwtTokenHandler = new JwtSecurityTokenHandler();
 
-                var expiryDate = UnixTimeStampToDateTime(utcLongExpiryDate);
+        //        //// prevent validate token lifetime.
+        //        //tokenValidationParameters.ValidateLifetime = false;
 
-                
-                var storedToken = await _refreshTokenRepository.GetAsync(rt => rt.Token == refreshTokenDto.RefreshToken);
+        //        //// 01- Validate token is a propper jwt token formatting.
+        //        //var claimsPrincipal = jwtTokenHandler.ValidateToken(refreshTokenDto.Token, tokenValidationParameters, out var validatedToken);
 
-                if (storedToken is null)
-                {
-                    tokenValidationParameters.ValidateLifetime = true;
+        //        //// 02- Validate token has been encrypted using the encryption that we've specified. 
+        //        //if (validatedToken is JwtSecurityToken jwtSecurityToken)
+        //        //{
+        //        //    var isSameEncryption = jwtSecurityToken.Header
+        //        //                                           .Alg
+        //        //                                           .Equals(SecurityAlgorithms.HmacSha256,
+        //        //                                                   StringComparison.InvariantCultureIgnoreCase);
 
-                    
+        //        //    if (!isSameEncryption)
+        //        //    {
+        //        //        tokenValidationParameters.ValidateLifetime = true;
 
-                    return response.CreateResponse(MessageCodes.NotFound);
-                }
+        //        //        return response.CreateResponse(MessageCodes.InvalidToken);
 
-                // 07- Validate jwt token Jti matches refresh token jti in database.
-                var jti = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
+        //        //    }
+        //        //}
 
-                if (!storedToken.Jti.Equals(jti))
-                {
-                    tokenValidationParameters.ValidateLifetime = true;
+
+        //        //var utcLongExpiryDate = long.Parse(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Exp).Value);
+
+        //        //var expiryDate = UnixTimeStampToDateTime(utcLongExpiryDate);
+
+
+        //        //var storedToken = await _refreshTokenRepository.GetAsync(rt => rt.Token == refreshTokenDto.RefreshToken);
+
+        //        //if (storedToken is null)
+        //        //{
+        //        //    tokenValidationParameters.ValidateLifetime = true;
 
 
 
-                    // reset lifetime to valdiate it.
-                    return response.CreateResponse(MessageCodes.TokensDoNotMatch);
-                }
-                tokenValidationParameters.ValidateLifetime = true;
-                return response.CreateResponse(storedToken);
-            }
-            catch (Exception ex)
-            {
-                return response.CreateResponse(ex);
-            }
+        //        //    return response.CreateResponse(MessageCodes.NotFound);
+        //        //}
 
-            // reset lifetime to valdiate it.
+        //        //// 07- Validate jwt token Jti matches refresh token jti in database.
+        //        //var jti = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
+
+        //        //if (!storedToken.Jti.Equals(jti))
+        //        //{
+        //        //    tokenValidationParameters.ValidateLifetime = true;
+
+
+
+        //        //    // reset lifetime to valdiate it.
+        //        //    return response.CreateResponse(MessageCodes.TokensDoNotMatch);
+        //        //}
+        //        //tokenValidationParameters.ValidateLifetime = true;
+        //        return response.CreateResponse(storedToken);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return response.CreateResponse(ex);
+        //    }
+
+        //    // reset lifetime to valdiate it.
       
-        }
-        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
-        {
-            // utc time is an integer (long) number of seconds from the 1970/1/1 till now. 
-            var datetimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            return datetimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
-        }
+        //}
+        //private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+        //{
+        //    // utc time is an integer (long) number of seconds from the 1970/1/1 till now. 
+        //    var datetimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        //    return datetimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
+        //}
         private async Task<string> UpdateRefreshTokenAsync(RefreshToken refreshToken, string jti)
         {
             refreshToken.Jti = jti;

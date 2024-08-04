@@ -13,10 +13,12 @@ namespace QuizPlatform.Repository
         T Get(Expression<Func<T, bool>> where);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
         void Delete(T entity);
-        
-        
+        List<T> Add(List<T> entities);
+
+
         Task<T> GetAsync(Expression<Func<T, bool>> where);
         IQueryable<T> Where(Expression<Func<T, bool>> where);
+
     }
 }
 
