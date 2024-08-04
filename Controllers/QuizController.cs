@@ -11,7 +11,6 @@ namespace QuizPlatform.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class QuizController : BaseController
     {
         private readonly IQuizBLL _quizBLL;
