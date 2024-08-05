@@ -53,7 +53,7 @@ namespace QuizPlatform.Controllers
             return Ok(response);
         }
         [HttpGet("GetAllQuiz")]
-        public async Task<IActionResult> GetAllQuiz(int id)
+        public async Task<IActionResult> GetAllQuiz()
         {
             var response = await _quizBLL.GetAllQuiz();
             return Ok(response);

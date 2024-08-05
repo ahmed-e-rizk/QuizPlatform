@@ -48,9 +48,10 @@ namespace QuizPlatform.BLL.Quizs
 
             }
         }
-        public async Task<IResponse<QuizDto>> CreateQuiz(QuizDto QuizDto)
+
+        public async Task<IResponse<bool>> CreateQuiz(QuizDto QuizDto)
         {
-            var response = new Response<QuizDto>();
+            var response = new Response<bool>();
             try
             {
 
@@ -61,7 +62,7 @@ namespace QuizPlatform.BLL.Quizs
                 var mapped = _mapper.Map<Models.Quiz>(QuizDto);
                 await _quizRepository.AddAsync(mapped);
                 await _unitOfWork.CommitAsync();
-                return response.CreateResponse(QuizDto);
+                return response.CreateResponse(true);
 
             }
             catch (Exception e)
@@ -116,7 +117,8 @@ namespace QuizPlatform.BLL.Quizs
 
             try
             {
-                var res =  _quizRepository.Where(e=>true);
+                var res =  _quizRepository.Where(e=>true).ToList();
+                 
                 return response.CreateResponse(_mapper.Map<List<QuizResultDto>>(res));
             }
             catch (Exception e)
