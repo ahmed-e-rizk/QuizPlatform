@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizPlatform.BLL;
@@ -23,6 +25,7 @@ namespace QuizPlatform.Controllers
         [HttpPost("CreateQuiz")]
         public async Task<IActionResult> CreateQuizAsync([FromForm] QuizDto quizDto)
         {
+            quizDto.Questions= JsonSerializer.Deserialize<List<QuestionDto>>(quizDto.Question);
             var response = await _quizBLL.CreateQuiz(quizDto);
 
             return Ok(response);
